@@ -17,14 +17,10 @@ pipeline {
             post {
                success {
                     junit 'target/surefire-reports/**/*.xml'
-                }
-                
+                }   
             }
-
-
         }
-        
-        
+          
         stage('SonarQube Analysis'){
             steps{
                    withSonarQubeEnv(installationName: 'sonarqube') {
@@ -42,8 +38,7 @@ pipeline {
         }
         stage('Image Scanning Trivy'){
             steps{
-               sh 'sudo trivy image logicopslab/devsecops-demo:$BUILD_NUMBER > $WORKSPACE/trivy-image-scan/trivy-image-scan-$BUILD_NUMBER.txt'
-               
+               sh 'sudo trivy image logicopslab/devsecops-demo:$BUILD_NUMBER > $WORKSPACE/trivy-image-scan/trivy-image-scan-$BUILD_NUMBER.txt'   
             }
         }
         stage('Pushing Docker Image into Docker Hub'){
@@ -67,7 +62,6 @@ pipeline {
                    gsutil ls gs://devsecops-reports
                    '''
                 }
-
             }
         }
         stage('Cleaning up DockerImage'){
