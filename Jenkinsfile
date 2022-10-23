@@ -45,7 +45,7 @@ pipeline {
             steps{
                 withCredentials([vaultString(credentialsId: 'vault-dockerhub-password', variable: 'DOCKERHUB_PASSWORD')]) {
                 sh '''
-                sudo docker login -u logciosplab -p $DOCKERHUB_PASSWORD
+                sudo docker login -u logicosplab -p $DOCKERHUB_PASSWORD
                 sudo docker push logicopslab/devsecops-demo:$BUILD_NUMBER
                 '''
                }
