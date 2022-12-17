@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Checkout git') {
             steps {
-               git branch: 'sonar', url: 'https://github.com/logicopslab/java-web-app'
+               git branch: 'main', url: 'https://github.com/logicopslab/java-web-app'
             }
         }
         
