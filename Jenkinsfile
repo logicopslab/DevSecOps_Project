@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Checkout git') {
             steps {
-               git branch: 'sonar', url: 'https://github.com/darinpope/java-web-app'
+               git branch: 'sonar', url: 'https://github.com/logicopslab/java-web-app'
             }
         }
         
@@ -17,15 +17,11 @@ pipeline {
             post {
                success {
                     junit 'target/surefire-reports/**/*.xml'
-                }
-                
+                }   
             }
-
-
         }
-        
-        
-        stage('Sonarqube Analysis'){
+          
+        stage('SonarQube Analysis'){
             steps{
                    withSonarQubeEnv(installationName: 'sonarqube') {
                         sh 'mvn clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
@@ -35,23 +31,22 @@ pipeline {
         stage('Building Docker Image'){
             steps{
                 sh '''
-                sudo docker build -t nanditasahu/devsecops-demo:$BUILD_NUMBER .
+                sudo docker build -t logicopslab/devsecops-demo:$BUILD_NUMBER .
                 sudo docker images
                 '''
             }
         }
         stage('Image Scanning Trivy'){
             steps{
-               sh 'sudo trivy image nanditasahu/devsecops-demo:$BUILD_NUMBER > $WORKSPACE/trivy-image-scan/trivy-image-scan-$BUILD_NUMBER.txt'
-               
+               sh 'sudo trivy image logicopslab/devsecops-demo:$BUILD_NUMBER > $WORKSPACE/trivy-image-scan/trivy-image-scan-$BUILD_NUMBER.txt'   
             }
         }
         stage('Pushing Docker Image into Docker Hub'){
             steps{
                 withCredentials([vaultString(credentialsId: 'vault-dockerhub-password', variable: 'DOCKERHUB_PASSWORD')]) {
                 sh '''
-                sudo docker login -u nanditasahu -p $DOCKERHUB_PASSWORD
-                sudo docker push nanditasahu/devsecops-demo:$BUILD_NUMBER
+                sudo docker login -u logicosplab -p $DOCKERHUB_PASSWORD
+                sudo docker push logicopslab/devsecops-demo:$BUILD_NUMBER
                 '''
                }
             }
@@ -67,12 +62,11 @@ pipeline {
                    gsutil ls gs://devsecops-reports
                    '''
                 }
-
             }
         }
         stage('Cleaning up DockerImage'){
             steps{
-                sh 'sudo docker rmi nanditasahu/devsecops-demo:$BUILD_NUMBER'
+                sh 'sudo docker rmi logicopslab/devsecops-demo:$BUILD_NUMBER'
             }
         }
     }
